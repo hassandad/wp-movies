@@ -182,6 +182,65 @@ function add_data_in_film_type( $content ) {
 }
 
 
+add_action( 'widgets_init', 'films_widget_init' );
+ 
+function films_widget_init() {
+    register_widget( 'films_widget' );
+}
+ 
+class films_widget extends WP_Widget
+{
+ 
+    public function __construct()
+    {
+        $widget_details = array(
+            'classname' => 'films_widget',
+            'description' => 'A widget to show 5 films posts'
+        );
+ 
+        parent::__construct( 'films_widget', 'Films Widget', $widget_details );
+ 
+    }
+ 
+    public function form( $instance ) {
+        // Backend Form
+    }
+ 
+    public function update( $new_instance, $old_instance ) {  
+        return $new_instance;
+    }
+ 
+    public function widget( $args, $instance ) {
+        // Frontend display HTML
+        $args = array(
+            'numberposts' => 5,
+            'post_type'   => 'cl_films'
+        );
+
+        $latest_films = get_posts( $args );
+        
+//        echo "<pre>";print_r($latest_films);echo "</pre>";
+//        exit;
+
+        
+        echo "<h1>5 Latest Films</h1>";
+        echo '<ul class="list-group list-group-flush">';
+        if ( $latest_films ) {
+            foreach ( $latest_films as $post ) :
+                //setup_postdata( $post ); ?>
+                <li class="list-group-item"><a href="<?php echo get_permalink($post->ID); ?>"><?php echo $post->post_title . $post->ID; ?></a></li>
+
+            <?php
+            endforeach; 
+            wp_reset_postdata();
+        }
+                    
+        echo '</ul>';
+        
+    }
+ 
+}
+
 //$debug_tags = array();
 //add_action( 'all', function ( $tag ) {
 //    global $debug_tags;
