@@ -140,3 +140,54 @@ function create_film_taxonomies() {
 }
 // hook into the init action and call create_film_taxonomies when it fires
 add_action( 'init', 'create_film_taxonomies', 0 );
+
+
+add_filter( 'the_content', 'add_data_in_film_type' );
+function add_data_in_film_type( $content ) {
+ 
+    // Check if we're inside the main loop in a single post page.
+    if ( is_post_type_archive('cl_films') ) {
+        $meta_content = '';
+        $tax_list = array(
+                    'genre'=>'Genre',
+                    'country'=>'Country',
+                    );
+		
+        foreach($tax_list as $tax_id=>$tax){
+            $meta_content .= "<h5 class='d-inline'>$tax : </h5>";
+
+            $terms = wp_get_post_terms(get_the_ID(), $tax_id, array("fields" => "all"));
+            $list = array();
+            foreach ($terms as $term) {
+                $list[] = '<a href="'.get_term_link($term).'">'.$term->name.'</a>';
+            }
+
+            $meta_content .= implode(', ',$list);
+            $meta_content .= "<br />";
+        }
+        
+        $meta_content .= "<h5 class='d-inline'>Ticket Price:</h5> ". get_field( 'ticket_price', get_the_ID())."$";
+        $meta_content .= "<br />";
+        // get raw date
+        $date = get_field('release_date', false, false);
+
+        // make date object
+        $date = new DateTime($date);
+        
+        $meta_content .= "<h5 class='d-inline'>Release Date:</h5>". $date->format('j M Y');
+        return $content . $meta_content;
+    }
+ 
+    return $content;
+}
+
+
+//$debug_tags = array();
+//add_action( 'all', function ( $tag ) {
+//    global $debug_tags;
+//    if ( in_array( $tag, $debug_tags ) ) {
+//        return;
+//    }
+//    echo "<pre>" . $tag . "</pre>";
+//    $debug_tags[] = $tag;
+//} );
