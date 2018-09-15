@@ -13,3 +13,19 @@ function unite_child_enqueue_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'unite_child_enqueue_styles' );
 
+
+function create_fils_posttype() {
+  register_post_type( 'cl_films',
+    array(
+      'labels' => array(
+        'name' => __( 'Films' ),
+        'singular_name' => __( 'Film' )
+      ),
+      'public' => true,
+      'has_archive' => true,
+      'rewrite' => array('slug' => 'films'),
+    )
+  );
+}
+add_action( 'init', 'create_fils_posttype' );
+
